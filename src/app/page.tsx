@@ -36,8 +36,14 @@ export default function HomePage() {
       setOutputText(data.normalized_text);
       setQualityReport(data.quality_report);
     } catch (error: any) {
-      console.error('Errore nella chiamata API:', error);
-      setOutputText(`Errore: ${error.message}`);
+       if (error instanceof Error) {
+        console.error('Errore nella chiamata API:', error);
+        setOutputText(`Errore: ${error.message}`);
+		} else {
+        // Se non è un oggetto Error, gestiamo il caso generico
+        console.error('Errore sconosciuto:', error);
+        setOutputText('Si è verificato un errore sconosciuto.');
+		}
     } finally {
       setIsLoading(false);
     }
