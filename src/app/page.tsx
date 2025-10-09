@@ -37,26 +37,27 @@ export default function HomePage() {
       setOutputText(data.normalized_text);
       setQualityReport(data.quality_report);
     } catch (error) {
-	  if (error instanceof Error) {
-		console.error('Errore nella chiamata API:', error);
-		let errorMessage = 'Si è verificato un errore sconosciuto.';
-		if (error.message) {
-			try {
-				const parsedError = JSON.parse(error.message);
-				errorMessage = parsedError.detail || JSON.stringify(parsedError);
-			} catch {
-				errorMessage = error.message;
+		// ... (il blocco catch rimane invariato dalla nostra ultima correzione) ...
+		if (error instanceof Error) {
+			console.error('Errore nella chiamata API:', error);
+			let errorMessage = 'Si è verificato un errore sconosciuto.';
+			if (error.message) {
+				try {
+					const parsedError = JSON.parse(error.message);
+					errorMessage = parsedError.detail || JSON.stringify(parsedError);
+				} catch {
+					errorMessage = error.message;
+				}
 			}
+			setOutputText(`Errore: ${errorMessage}`);
+		} else {
+			console.error('Errore sconosciuto:', error);
+			setOutputText(`Errore: ${String(error)}`);
 		}
-		setOutputText(`Errore: ${errorMessage}`);
-	  } else {
-		console.error('Errore sconosciuto:', error);
-		setOutputText(`Errore: ${String(error)}`);
+	  } finally {
+		setIsLoading(false);
 	  }
-	} finally {
-	  setIsLoading(false);
-	}
-  };
+  }
 
   const handleCopy = () => {
     if (!outputText || isLoading || outputText === 'Elaborazione in corso...') return;
