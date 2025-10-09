@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // <-- QUESTA DEVE ESSERE L'UNICA RIGA DA 'react'
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase'
 
 type QualityReport = {
   reasoning: string;
@@ -13,6 +15,37 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [qualityReport, setQualityReport] = useState<QualityReport | null>(null);
   const [copyButtonText, setCopyButtonText] = useState('Copia');
+
+  // --- NUOVO STATO E ROUTER PER LA GESTIONE UTENTE ---
+  const [userSession, setUserSession] = useState<any>(null); // Per tenere traccia della sessione utente
+  const router = useRouter(); // Inizializza il router per la navigazione
+  // --- FINE NUOVO ---
+
+  // --- NUOVO: Controlla la sessione utente all'avvio del componente ---
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserSession(session);
+    };
+    getSession();
+
+    // Aggiungi un listener per i cambiamenti di stato dell'autenticazione
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUserSession(session);
+        // Se l'utente si è disconnesso, reindirizza alla pagina di login
+        if (event === 'SIGNED_OUT') {
+          router.push('/login');
+        }
+      }
+    );
+
+    // Pulisci il listener quando il componente viene smontato
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []); // Esegui solo al mount e unmount
+  // --- FINE NUOVO --
 
   const handleValidate = async () => {
     if (!inputText.trim()) {
@@ -74,16 +107,41 @@ export default function HomePage() {
     setOutputText('');
     setQualityReport(null);
   };
+  
+  const handleLogout = async () => {
+    setIsLoading(true); // Imposta lo stato di caricamento durante il logout
+    const { error: signOutError } = await supabase.auth.signOut();
+
+    if (signOutError) {
+        console.error('Errore durante il logout:', signOutError.message);
+        alert('Errore durante il logout: ' + signOutError.message);
+    } else {
+        // Il listener onAuthStateChange gestirà il reindirizzamento
+        // ma per sicurezza possiamo anche reindirizzare qui
+        router.push('/login');
+    }
+    setIsLoading(false);
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-gray-900 p-8 text-white">
       <div className="w-full max-w-4xl">
-        <header className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-blue-400">Text Validator</h1>
-          <p className="mt-2 text-gray-400">
-            Pulisci, normalizza e valida la qualità dei tuoi testi in un solo click.
-          </p>
-        </header>
+        <header className="mb-8 text-center relative"> {/* Aggiunto relative per il posizionamento */}
+	  {userSession && ( // Mostra il pulsante solo se l'utente è loggato
+		<button
+		  onClick={handleLogout}
+		  disabled={isLoading}
+		  className="absolute top-0 right-0 rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-red-500 disabled:bg-gray-500 disabled:cursor-not-allowed"
+		>
+		  Logout
+		</button>
+	  )}
+	  <h1 className="text-4xl font-bold text-blue-400">Text Validator</h1>
+	  <p className="mt-2 text-gray-400">
+		Pulisci, normalizza e valida la qualità dei tuoi testi in un solo click.
+	  </p>
+	</header>
+
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
