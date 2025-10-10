@@ -21,6 +21,12 @@ export default function HomePage() {
     "PM - Interpretazione Trascrizioni",
     "Copywriter Persuasivo",
     "Revisore Legale/Regolatorio",
+    "Scrittore di Newsletter",
+    "Social Media Manager B2B",
+    "Comunicatore di Crisi PR",
+    "Traduttore Tecnico IT",
+    "Specialista Comunicazioni HR",
+    "Ottimizzatore Email di Vendita",
   ];
   const [selectedProfile, setSelectedProfile] = useState(profileOptions[0]);
   

@@ -95,20 +95,29 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* --- 2. NUOVA SEZIONE INFORMATIVA --- */}
+      {/* --- 2. NUOVA SEZIONE INFORMATIVA (AGGIORNATA) --- */}
       <div className="w-full max-w-md mt-12 text-left px-4">
         <h2 className="text-3xl font-semibold text-blue-300 mb-4">
-          Cos'è Text Validator?
+          Un Tool, 10 Profili Esperti al Tuo Servizio
         </h2>
-        <ul className="list-disc list-inside space-y-3 text-gray-300 text-lg">
+        <p className="text-gray-400 mb-4 text-lg">
+          Accedi per sbloccare una suite di strumenti di validazione AI, ciascuno specializzato in un'area critica della comunicazione aziendale.
+        </p>
+        <ul className="list-disc list-inside space-y-3 text-gray-300">
           <li>
-            <strong>Pulisci e Normalizza:</strong> Rimuovi istantaneamente il Markdown e uniforma il tono dei tuoi testi per un linguaggio professionale, coerente e "non robotico".
+            <strong>Normalizza e Pulisci:</strong> Dal nostro profilo "Generico" a quello "Legale", rimuovi il caos e uniforma il tono.
           </li>
           <li>
-            <strong>Valida con l'AI:</strong> Ottieni un "Punteggio di Qualità Umana" per ogni testo, con un'analisi dettagliata che ti aiuta a capire i punti di forza e le aree di miglioramento.
+            <strong>Crea Contenuti Persuasivi:</strong> Usa i profili "Copywriter" e "Scrittore di Newsletter" per testi che convertono.
           </li>
           <li>
-            <strong>Risparmia Tempo:</strong> Dimentica l'editing manuale. Garantisci coerenza e qualità in tutte le tue comunicazioni aziendali, dal supporto clienti al marketing.
+            <strong>Gestisci Comunicazioni Delicate:</strong> Affidati ai profili "PR di Crisi" e "HR" per messaggi chiari ed empatici.
+          </li>
+          <li>
+            <strong>Domina la Scena Digitale:</strong> Con i profili "Social Media Manager" e "Ottimizzatore Email di Vendita" per massimizzare l'impatto.
+          </li>
+          <li>
+            <strong>Semplifica il Complesso:</strong> I profili "Project Manager" e "Traduttore IT" trasformano note tecniche in insight azionabili.
           </li>
         </ul>
       </div>
