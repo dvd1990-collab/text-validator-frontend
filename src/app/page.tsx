@@ -1,8 +1,14 @@
+// src/app/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+// Rimuovi l'importazione di useRouter e supabase, non più usati direttamente per l'auth
+// import { useRouter } from 'next/navigation';
+// import { supabase } from '@/lib/supabase';
+
+// --- NUOVE IMPORTAZIONI DI CLERK ---
+import { useUser, useAuth } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation'; // Manteniamo useRouter per i reindirizzamenti
 
 type QualityReport = {
   reasoning: string;
@@ -15,6 +21,8 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [qualityReport, setQualityReport] = useState<QualityReport | null>(null);
   const [copyButtonText, setCopyButtonText] = useState('Copia');
+  const [usageCount, setUsageCount] = useState<number | null>(null);
+  const [usageLimit, setUsageLimit] = useState<number | null>(null);
 
   const profileOptions = [
     "Generico",
@@ -30,44 +38,89 @@ export default function HomePage() {
   ];
   const [selectedProfile, setSelectedProfile] = useState(profileOptions[0]);
   
-  const [userSession, setUserSession] = useState<any>(null);
-  // MODIFICA: Lo stato di caricamento ora inizia come `true` di default
-  const [loadingSession, setLoadingSession] = useState(true);
-  const router = useRouter();
+  // --- NUOVI HOOKS DI CLERK ---
+  const { isLoaded, isSignedIn, user } = useUser(); // Per lo stato dell'utente
+  const { signOut, getToken } = useAuth(); // Per il logout e ottenere il JWT
+  const router = useRouter(); // Mantenuto per reindirizzamenti manuali se necessari
 
+  // Rimuovi completamente i vecchi useEffect per la sessione Supabase
+  // useEffect(() => { ... }, []);
+  // Rimuovi completamente il vecchio useEffect per il reindirizzamento
+  // useEffect(() => { ... }, [userSession, loadingSession, router]);
+
+  // Clerk gestirà i reindirizzamenti automaticamente grazie al middleware.
+  // Tuttavia, potresti voler mostrare uno stato di caricamento mentre Clerk inizializza.
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUserSession(session);
-      setLoadingSession(false); 
-    };
-    getSession();
+    const fetchUsage = async () => {
+        if (!isLoaded || !isSignedIn) {
+            return; // Aspetta che Clerk abbia caricato e l'utente sia autenticato
+        }
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUserSession(session);
-        // Se la sessione cambia (es. logout), ricarichiamo lo stato
-        setLoadingSession(false);
-      }
+        try {
+            const token = await getToken(); // Ottieni il token di Clerk
+            if (!token) {
+                console.error("Impossibile ottenere il token di autenticazione per fetchUsage.");
+                return;
+            }
+
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`, // Invia il token Clerk
+            };
+
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+            const response = await fetch(`${apiUrl}/user-status`, { // Chiamata al nuovo endpoint
+                method: 'GET',
+                headers: headers,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Errore nel recupero dello stato utente:', errorData.detail || 'Errore sconosciuto.');
+                if (response.status === 401) {
+                    // Se il token è scaduto o non valido, forza il logout
+                    await signOut(() => router.push('/login'));
+                    alert('La sessione è scaduta durante il caricamento dello stato. Effettua nuovamente il login.');
+                }
+                return;
+            }
+
+            const data = await response.json();
+            setUsageCount(data.count);
+            setUsageLimit(data.limit);
+        } catch (error) {
+            console.error('Errore sconosciuto durante il recupero dello stato utente:', error);
+        }
+    };
+    fetchUsage();
+  }, [isLoaded, isSignedIn, getToken, signOut, router]); // Dipendenze per rieseguire l'hook quando lo stato di auth cambia
+  
+  if (!isLoaded) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
+        <p>Caricamento autenticazione...</p>
+      </main>
     );
+  }
 
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
-
-  // --- NUOVA LOGICA DI PROTEZIONE DELLA PAGINA ---
-  // Questo hook gestisce il reindirizzamento
-  useEffect(() => {
-    // Se il controllo della sessione è terminato e non c'è nessuna sessione utente...
-    if (!loadingSession && !userSession) {
-      // ...reindirizza immediatamente alla pagina di login.
-      router.push('/login');
-    }
-  }, [userSession, loadingSession, router]);
-  // --- FINE NUOVA LOGICA ---
+  // Se l'utente non è autenticato e Clerk ha finito di caricare,
+  // il middleware dovrebbe già aver reindirizzato. Questo è un fallback.
+  if (!isSignedIn) {
+     router.push('/login');
+     return (
+        <main className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
+            <p>Reindirizzamento al login...</p>
+        </main>
+     );
+  }
 
   const handleValidate = async () => {
+    // --- MODIFICATO: userSession non esiste più, usiamo isSignedIn di Clerk ---
+    if (!isSignedIn) {
+      alert('Devi essere autenticato per validare il testo.');
+      router.push('/login'); // Reindirizza se per qualche motivo non è loggato
+      return;
+    }
     if (!inputText.trim()) {
       alert('Per favore, inserisci del testo da validare.');
       return;
@@ -75,36 +128,53 @@ export default function HomePage() {
     setIsLoading(true);
     setOutputText('Elaborazione in corso...');
     setQualityReport(null);
+
     try {
-      const headers: HeadersInit = { 'Content-Type': 'application/json' };
-      if (userSession?.access_token) {
-        headers['Authorization'] = `Bearer ${userSession.access_token}`;
+      // --- MODIFICATO: Otteniamo il token JWT da Clerk ---
+      const token = await getToken(); // Questo ottiene il JWT di Clerk
+      if (!token) {
+        throw new Error("Impossibile ottenere il token di autenticazione da Clerk.");
       }
 
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // Usiamo il token di Clerk
+      };
+
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      console.log("URL dell'API che sto per chiamare:", apiUrl);
       const response = await fetch(`${apiUrl}/validate`, {
         method: 'POST',
         headers: headers,
-        body: JSON.stringify({ text: inputText,
-		profile_name: selectedProfile,
-		}),
+        body: JSON.stringify({
+          text: inputText,
+          profile_name: selectedProfile,
+        }),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 401) {
-            router.push('/login');
-            return;
-        }
-        throw new Error(errorData.detail || 'Si è verificato un errore.');
-      }
+
       const data = await response.json();
 
+      if (!response.ok) {
+        if (response.status === 401) {
+            // Se il token è scaduto o non valido, forza il logout
+            await signOut(() => router.push('/login'));
+            alert('La sessione è scaduta. Effettua nuovamente il login.');
+            return;
+        }
+        if (response.status === 429) {
+          alert(data.detail || "Hai superato il limite di chiamate giornaliere.");
+        }
+        throw new Error(data.detail || 'Si è verificato un errore.');
+      }
+      
       if (data && data.error) {
           throw new Error(data.details || data.error);
       }
 
       setOutputText(data.normalized_text);
       setQualityReport(data.quality_report);
+      setUsageCount(data.usage.count);
+      setUsageLimit(data.usage.limit);
 
     } catch (error) {
         if (error instanceof Error) {
@@ -144,45 +214,52 @@ export default function HomePage() {
     setQualityReport(null);
   };
 
-  // --- LOGICA DI LOGOUT OTTIMIZZATA ---
+  // --- LOGICA DI LOGOUT MODIFICATA PER CLERK ---
   const handleLogout = async () => {
       setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) {
+      try {
+          // Utilizza il metodo signOut di Clerk
+          await signOut(() => router.push('/login'));
+      } catch (error: any) {
           console.error('Errore durante il logout:', error.message);
           alert('Errore durante il logout: ' + error.message);
+      } finally {
+          setIsLoading(false);
       }
-      // Dopo il signOut, il listener onAuthStateChange aggiornerà lo stato
-      // e l'hook useEffect si occuperà del reindirizzamento.
-      // Aggiungiamo un push esplicito per rendere il tutto più rapido.
-      router.push("/login");
-      setIsLoading(false);
   };
-
-  // --- LOGICA DI RENDERING CORRETTA ---
-  // Se stiamo ancora verificando la sessione o se l'utente non è loggato,
-  // mostriamo una schermata di caricamento. L'hook useEffect gestirà il reindirizzamento.
-  if (loadingSession || !userSession) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
-        <p>Caricamento...</p>
-      </main>
-    );
-  }
+  
+  // Rimuovi il rendering condizionale basato su loadingSession e userSession
+  // if (loadingSession || !userSession) { ... }
+  // if (!userSession) { ... }
+  // La gestione del caricamento e del reindirizzamento iniziale è ora sopra,
+  // gestita da !isLoaded e !isSignedIn.
 
   // Se il caricamento è finito E l'utente è autenticato, mostra l'applicazione.
-  // Abbiamo rimosso la duplicazione del codice.
   return (
     <main className="flex min-h-screen flex-col items-center bg-gray-900 p-8 text-white">
       <div className="w-full max-w-4xl">
         <header className="mb-8 text-center relative">
-          <button
-            onClick={handleLogout}
-            disabled={isLoading}
-            className="absolute top-0 right-0 rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-red-500 disabled:bg-gray-500 disabled:cursor-not-allowed"
-          >
-            Logout ({userSession.user.email})
-          </button>
+        
+          <div className="absolute top-0 right-0 flex items-center space-x-4">
+            {usageCount !== null && usageLimit !== null && (
+              <div className="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-md">
+                {usageLimit === -1 ? (
+                  <span>Utilizzo: Illimitato</span>
+                ) : (
+                  <span>Chiamate: {usageCount} / {usageLimit}</span>
+                )}
+              </div>
+            )}
+            <button
+              onClick={handleLogout}
+              disabled={isLoading}
+              className="rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-red-500"
+            >
+              {/* --- MODIFICATO: user.emailAddress per Clerk --- */}
+              Logout ({user?.emailAddresses[0]?.emailAddress || 'utente'})
+            </button>
+          </div>
+
           <h1 className="text-4xl font-bold text-blue-400">Text Validator</h1>
           <p className="mt-2 text-gray-400">
             Pulisci, normalizza e valida la qualità dei tuoi testi in un solo click.
