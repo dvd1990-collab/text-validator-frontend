@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Per reindirizzare l'utente
-import { supabase } from '@/lib/supabase'; // Importiamo il nostro client Supabase
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSigningUp, setIsSigningUp] = useState(false); // Per alternare tra Login e Registrazione
+  const [isSigningUp, setIsSigningUp] = useState(false);
 
   const router = useRouter();
 
@@ -24,17 +24,19 @@ export default function LoginPage() {
     if (authError) {
       setError(authError.message);
     } else {
-      // Reindirizza l'utente alla pagina principale dopo il login/registrazione
       router.push('/');
     }
     setIsLoading(false);
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
+    // --- MODIFICA CHIAVE: Aggiunto flex-col per impilare gli elementi verticalmente ---
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-8 text-white">
+      
+      {/* 1. Modulo di Login (invariato) */}
       <div className="w-full max-w-md rounded-lg bg-gray-800 p-8 shadow-lg border border-gray-700">
         <h1 className="text-3xl font-bold text-center text-blue-400 mb-6">
-          {isSigningUp ? 'Registrati' : 'Accedi'} al Text Validator
+          {isSigningUp ? 'Registrati' : 'Accedi'} a Text Validator
         </h1>
 
         {error && (
@@ -92,6 +94,25 @@ export default function LoginPage() {
           </button>
         </p>
       </div>
+
+      {/* --- 2. NUOVA SEZIONE INFORMATIVA --- */}
+      <div className="w-full max-w-md mt-12 text-left px-4">
+        <h2 className="text-3xl font-semibold text-blue-300 mb-4">
+          Cos'è Text Validator?
+        </h2>
+        <ul className="list-disc list-inside space-y-3 text-gray-300 text-lg">
+          <li>
+            <strong>Pulisci e Normalizza:</strong> Rimuovi istantaneamente il Markdown e uniforma il tono dei tuoi testi per un linguaggio professionale, coerente e "non robotico".
+          </li>
+          <li>
+            <strong>Valida con l'AI:</strong> Ottieni un "Punteggio di Qualità Umana" per ogni testo, con un'analisi dettagliata che ti aiuta a capire i punti di forza e le aree di miglioramento.
+          </li>
+          <li>
+            <strong>Risparmia Tempo:</strong> Dimentica l'editing manuale. Garantisci coerenza e qualità in tutte le tue comunicazioni aziendali, dal supporto clienti al marketing.
+          </li>
+        </ul>
+      </div>
+
     </main>
   );
 }
