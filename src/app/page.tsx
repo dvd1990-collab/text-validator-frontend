@@ -16,33 +16,50 @@ export default function HomePage() {
   const [qualityReport, setQualityReport] = useState<QualityReport | null>(null);
   const [copyButtonText, setCopyButtonText] = useState('Copia');
 
+  const profileOptions = [
+    "Generico",
+    "PM - Interpretazione Trascrizioni",
+    "Copywriter Persuasivo",
+    "Revisore Legale/Regolatorio",
+  ];
+  const [selectedProfile, setSelectedProfile] = useState(profileOptions[0]);
+  
   const [userSession, setUserSession] = useState<any>(null);
-  const [loadingSession, setLoadingSession] = useState(true); // Usiamo questo stato per sapere quando la sessione è stata controllata
+  // MODIFICA: Lo stato di caricamento ora inizia come `true` di default
+  const [loadingSession, setLoadingSession] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUserSession(session);
-      setLoadingSession(false); // Imposta a false dopo aver controllato la sessione
+      setLoadingSession(false); 
     };
     getSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         setUserSession(session);
-        if (event === 'SIGNED_OUT') {
-          // Non reindirizziamo più automaticamente alla home, ma mostriamo la landing
-          // Se l'utente è sulla pagina principale e si slogga, il componente si aggiornerà
-          // e mostrerà la vista non autenticata.
-        }
+        // Se la sessione cambia (es. logout), ricarichiamo lo stato
+        setLoadingSession(false);
       }
     );
 
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []); // Non dipende più da router, perché non reindirizza automaticamente qui
+  }, []);
+
+  // --- NUOVA LOGICA DI PROTEZIONE DELLA PAGINA ---
+  // Questo hook gestisce il reindirizzamento
+  useEffect(() => {
+    // Se il controllo della sessione è terminato e non c'è nessuna sessione utente...
+    if (!loadingSession && !userSession) {
+      // ...reindirizza immediatamente alla pagina di login.
+      router.push('/login');
+    }
+  }, [userSession, loadingSession, router]);
+  // --- FINE NUOVA LOGICA ---
 
   const handleValidate = async () => {
     if (!inputText.trim()) {
@@ -53,22 +70,21 @@ export default function HomePage() {
     setOutputText('Elaborazione in corso...');
     setQualityReport(null);
     try {
-      // AGGIUNTO: Invia il token di autorizzazione solo se l'utente è loggato
       const headers: HeadersInit = { 'Content-Type': 'application/json' };
       if (userSession?.access_token) {
         headers['Authorization'] = `Bearer ${userSession.access_token}`;
       }
-      // FINE AGGIUNTA
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(`${apiUrl}/validate`, {
         method: 'POST',
-        headers: headers, // USA GLI HEADERS AGGIORNATI
-        body: JSON.stringify({ text: inputText }),
+        headers: headers,
+        body: JSON.stringify({ text: inputText,
+		profile_name: selectedProfile,
+		}),
       });
       if (!response.ok) {
         const errorData = await response.json();
-        // Se è un 401, reindirizza al login
         if (response.status === 401) {
             router.push('/login');
             return;
@@ -122,64 +138,34 @@ export default function HomePage() {
     setQualityReport(null);
   };
 
+  // --- LOGICA DI LOGOUT OTTIMIZZATA ---
   const handleLogout = async () => {
       setIsLoading(true);
-      const { error: signOutError } = await supabase.auth.signOut();
-
-      if (signOutError) {
-          console.error('Errore durante il logout:', signOutError.message);
-          alert('Errore durante il logout: ' + signOutError.message);
-      } else {
-          // Dopo il logout, il listener authListener si attiverà e aggiornerà userSession a null,
-          // mostrando la vista non autenticata senza reindirizzare a /login da qui.
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+          console.error('Errore durante il logout:', error.message);
+          alert('Errore durante il logout: ' + error.message);
       }
+      // Dopo il signOut, il listener onAuthStateChange aggiornerà lo stato
+      // e l'hook useEffect si occuperà del reindirizzamento.
+      // Aggiungiamo un push esplicito per rendere il tutto più rapido.
+      router.push("/login");
       setIsLoading(false);
   };
 
-  // --- NUOVO: RENDER CONDIZIONALE DELLA VETRINA O DEL TOOL ---
-  if (loadingSession) {
+  // --- LOGICA DI RENDERING CORRETTA ---
+  // Se stiamo ancora verificando la sessione o se l'utente non è loggato,
+  // mostriamo una schermata di caricamento. L'hook useEffect gestirà il reindirizzamento.
+  if (loadingSession || !userSession) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
-        <p>Caricamento sessione...</p>
+        <p>Caricamento...</p>
       </main>
     );
   }
 
-  // Se non autenticato, mostra la Landing Page / Vetrina
-  if (!userSession) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-8 text-white">
-        <div className="w-full max-w-4xl text-center">
-          <h1 className="text-5xl font-extrabold text-blue-400 mb-4">
-            Text Validator AI
-          </h1>
-          <p className="text-xl text-gray-300 mb-8">
-            Pulisci, normalizza e valida i tuoi testi con l'intelligenza artificiale di ultima generazione.
-            Ideale per comunicazioni B2B, marketing e contenuti professionali.
-          </p>
-
-          <button
-            onClick={() => router.push('/login')}
-            className="rounded-md bg-blue-600 px-10 py-4 text-xl font-bold text-white shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            Accedi o Registrati per Iniziare
-          </button>
-
-          <div className="mt-12 text-left">
-            <h2 className="text-3xl font-semibold text-blue-300 mb-4">Perché scegliere Text Validator?</h2>
-            <ul className="list-disc list-inside text-gray-300 space-y-2 text-lg">
-              <li>Rimuovi automaticamente il Markdown e formattazioni indesiderate.</li>
-              <li>Normalizza il tono del testo per un linguaggio professionale B2B.</li>
-              <li>Ottieni un "Punteggio di Qualità Umana" dettagliato con feedback AI.</li>
-              <li>Risparmia tempo e garantisci coerenza in tutte le tue comunicazioni.</li>
-            </ul>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  // Se autenticato, mostra il Tool Completo
+  // Se il caricamento è finito E l'utente è autenticato, mostra l'applicazione.
+  // Abbiamo rimosso la duplicazione del codice.
   return (
     <main className="flex min-h-screen flex-col items-center bg-gray-900 p-8 text-white">
       <div className="w-full max-w-4xl">
@@ -189,13 +175,32 @@ export default function HomePage() {
             disabled={isLoading}
             className="absolute top-0 right-0 rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-red-500 disabled:bg-gray-500 disabled:cursor-not-allowed"
           >
-            Logout ({userSession?.user?.email}) {/* Mostra email utente */}
+            Logout ({userSession.user.email})
           </button>
           <h1 className="text-4xl font-bold text-blue-400">Text Validator</h1>
           <p className="mt-2 text-gray-400">
             Pulisci, normalizza e valida la qualità dei tuoi testi in un solo click.
           </p>
         </header>
+
+        <div className="mb-6">
+          <label htmlFor="aiProfile" className="block text-sm font-medium text-gray-300 mb-2">
+            Seleziona Profilo AI
+          </label>
+          <select
+            id="aiProfile"
+            value={selectedProfile}
+            onChange={(e) => setSelectedProfile(e.target.value)}
+            disabled={isLoading}
+            className="w-full rounded-md border-gray-600 bg-gray-800 p-3 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+          >
+            {profileOptions.map((profile) => (
+              <option key={profile} value={profile}>
+                {profile}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
@@ -247,7 +252,7 @@ export default function HomePage() {
         </div>
 
         <div className="mt-6 flex justify-center">
-          <button 
+          <button
             onClick={handleValidate}
             disabled={isLoading}
             className="rounded-md bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 disabled:bg-gray-500 disabled:cursor-not-allowed"
