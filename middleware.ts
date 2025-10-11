@@ -1,6 +1,5 @@
 // middleware.ts
-// L'importazione corretta per Clerk v6.x
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'; // <--- CORREZIONE QUI
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
 // Definisci le rotte pubbliche che non richiedono autenticazione.
 // Assicurati che le pagine di login/signup e l'endpoint del webhook siano pubblici.
@@ -11,10 +10,10 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhook/clerk' // Importante: l'endpoint del webhook deve essere pubblico
 ]);
 
-export default clerkMiddleware((auth, request) => {
+export default clerkMiddleware(async (auth, request) => { // <--- AGGIUNTO 'async' QUI
   // Se la richiesta NON è per una rotta pubblica, proteggila.
   if (!isPublicRoute(request)) {
-    auth().protect();
+    (await auth()).protect(); // <--- AGGIUNTO 'await' QUI e racchiuso in parentesi
   }
 });
 
