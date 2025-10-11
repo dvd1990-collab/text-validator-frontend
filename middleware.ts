@@ -10,10 +10,10 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhook/clerk' // Importante: l'endpoint del webhook deve essere pubblico
 ]);
 
-export default clerkMiddleware((auth, request) => { // Rimosso 'async' dal callback
+export default clerkMiddleware((auth, request) => { 
   // Se la richiesta NON è per una rotta pubblica, proteggila.
   if (!isPublicRoute(request)) {
-    auth.protect(request); // <--- CORREZIONE QUI: Chiamiamo protect direttamente sull'oggetto 'auth' e passiamo 'request'
+    auth.protect(); // <--- CORREZIONE QUI: Chiamiamo protect SENZA argomenti
   }
 });
 
