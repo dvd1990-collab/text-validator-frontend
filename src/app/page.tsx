@@ -2,10 +2,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-// <--- AGGIUNTA IMPORTAZIONE MANCANTE QUI
-import { useAuth, useUser } from '@clerk/nextjs'; // Reinseriamo useUser e useAuth
+import { useAuth, useUser } from '@clerk/nextjs'; // Assicurati che useAuth sia qui
 import { useRouter } from 'next/navigation';
-// Rimosso Link, non più necessario qui
 
 type QualityReport = {
   reasoning: string;
@@ -18,9 +16,6 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [qualityReport, setQualityReport] = useState<QualityReport | null>(null);
   const [copyButtonText, setCopyButtonText] = useState('Copia');
-  // Rimuovi lo stato per usageCount e usageLimit, ora gestito nella Navbar
-  // const [usageCount, setUsageCount] = useState<number | null>(null);
-  // const [usageLimit, setUsageLimit] = useState<number | null>(null);
 
   const profileOptions = [
     "Generico",
@@ -37,22 +32,16 @@ export default function HomePage() {
   ];
   const [selectedProfile, setSelectedProfile] = useState(profileOptions[0]);
   
-  // Ora che usiamo useAuth e useRouter localmente, li definiamo qui.
-  const { isSignedIn, getToken } = useAuth(); // <--- OK, useAuth è ora importato
+  // INIZIO CORREZIONE: Destruttura 'signOut' da useAuth()
+  const { isSignedIn, getToken, signOut } = useAuth(); // <--- AGGIUNTO signOut QUI
+  // FINE CORREZIONE
+
   const router = useRouter(); 
 
-
-  // Rimuovi completamente l'useEffect per fetchUsage, ora gestito nella Navbar
-  // useEffect(() => { /* ... */ }, [isLoaded, isSignedIn, getToken, signOut, router]);
-  
-  // Il caricamento e il reindirizzamento iniziale sono ora gestiti in layout.tsx e middleware.ts
-  // Quindi possiamo rimuovere questi blocchi condizionali
-  // if (!isLoaded) { /* ... */ }
-  // if (!isSignedIn) { /* ... */ }
-
+  // Rimuovi completamente l'useEffect per fetchUsage, ora gestito nella Navbar (o puoi ripristinarlo qui se preferisci)
+  // Nota: La Navbar ora gestisce il suo stato di utilizzo, quindi questo useEffect è stato rimosso in un passaggio precedente.
 
   const handleValidate = async () => {
-    // Il check isSignedIn è ancora valido qui
     if (!isSignedIn) {
       alert('Devi essere autenticato per validare il testo.');
       router.push('/login');
@@ -92,9 +81,9 @@ export default function HomePage() {
 
       if (!response.ok) {
         if (response.status === 401) {
-            // Qui usiamo signOut direttamente se la sessione fallisce
-            // Poiché Navbar gestisce il suo stato, non è necessario passarglielo
-            await (await import('@clerk/nextjs')).signOut(() => router.push('/login')); 
+            // INIZIO CORREZIONE: Usa il signOut destrutturato
+            signOut(() => router.push('/login')); // <--- Ora chiami il signOut ottenuto dall'hook
+            // FINE CORREZIONE
             alert('La sessione è scaduta. Effettua nuovamente il login.');
             return;
         }
@@ -110,10 +99,6 @@ export default function HomePage() {
 
       setOutputText(data.normalized_text);
       setQualityReport(data.quality_report);
-      // Rimuovi l'aggiornamento dello stato per usageCount e usageLimit qui,
-      // la Navbar lo gestirà autonomamente dopo il proprio fetch.
-      // setUsageCount(data.usage.count);
-      // setUsageLimit(data.usage.limit);
 
     } catch (error) {
         if (error instanceof Error) {
@@ -152,41 +137,11 @@ export default function HomePage() {
     setOutputText('');
     setQualityReport(null);
   };
-
-  // Rimuovi handleLogout, ora gestito nella Navbar
-  // const handleLogout = async () => { /* ... */ };
   
   return (
-    // La main tag non ha più bisogno di padding top, ci pensa il layout
     <main className="flex min-h-screen flex-col items-center bg-gray-900 p-8 text-white">
       <div className="w-full max-w-4xl">
         <header className="mb-8 text-center relative">
-        
-          {/* RIMOSSO: Il div con Pricing, Logout e Contatore, ora gestito dalla Navbar */}
-          {/*
-          <div className="absolute top-8 right-4 flex flex-col items-end space-y-2"> 
-            <Link href="/pricing" className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg text-sm shadow-md transition-colors duration-200">
-                Pricing
-            </Link>
-            <button
-              onClick={handleLogout}
-              disabled={isLoading}
-              className="rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white shadow-md hover:bg-red-600 transition-colors duration-200"
-            >
-              Logout ({user?.emailAddresses[0]?.emailAddress || 'utente'})
-            </button>
-            {usageCount !== null && usageLimit !== null && (
-              <div className="text-sm text-gray-300 bg-gray-700 px-3 py-1 rounded-md shadow-sm">
-                {usageLimit === -1 ? (
-                  <span>Utilizzo: Illimitato</span>
-                ) : (
-                  <span>Chiamate: {usageCount} / {usageLimit}</span>
-                )}
-              </div>
-            )}
-          </div>
-          */}
-
           <h1 className="text-4xl font-extrabold text-blue-400">Text Validator</h1>
           <p className="mt-2 text-gray-400 font-semibold">
             Pulisci, normalizza e valida la qualità dei tuoi testi in un solo click.
