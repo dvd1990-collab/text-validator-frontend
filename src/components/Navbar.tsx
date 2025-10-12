@@ -84,11 +84,14 @@ export default function Navbar() {
 
       {/* Links e Bottoni per desktop e menu mobile */}
       <div className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-8 absolute md:static top-full left-0 w-full md:w-auto bg-gray-900 md:bg-transparent p-8 md:p-0 border-t md:border-t-0 border-gray-700 shadow-lg md:shadow-none`}>
-        {/* INIZIO MODIFICHE: Nuovo link Text Validator AI */}
         <Link href="/text-validator-ai" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">
           Text Validator AI
         </Link>
-        {/* FINE MODIFICHE: Nuovo link Text Validator AI */}
+        {/* INIZIO MODIFICHE: Nuovo link Roadmap */}
+        <Link href="/roadmap" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">
+          Roadmap
+        </Link>
+        {/* FINE MODIFICHE: Nuovo link Roadmap */}
 
         <Link href="/pricing" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">
           Pricing
