@@ -87,11 +87,14 @@ export default function Navbar() {
         <Link href="/text-validator-ai" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">
           Text Validator AI
         </Link>
-        {/* INIZIO MODIFICHE: Nuovo link Roadmap */}
         <Link href="/roadmap" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">
           Roadmap
         </Link>
-        {/* FINE MODIFICHE: Nuovo link Roadmap */}
+        {/* INIZIO MODIFICHE: Nuovo link Use Cases */}
+        <Link href="/use-cases" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">
+          Use Cases
+        </Link>
+        {/* FINE MODIFICHE: Nuovo link Use Cases */}
 
         <Link href="/pricing" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">
           Pricing
