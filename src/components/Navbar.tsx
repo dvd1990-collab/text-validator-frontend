@@ -5,44 +5,32 @@ import Link from 'next/link';
 import { useUser, useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import GearIcon from './GearIcon'; // <-- Importa la nuova icona
-import SettingsModal from './SettingsModal'; // <-- Importa il nuovo modale
+import GearIcon from './GearIcon';
+import SettingsModal from './SettingsModal';
+import { useUsage } from '@/context/UsageContext'; // Importa il nostro hook personalizzato
 
 export default function Navbar() {
   const { isLoaded, isSignedIn, user } = useUser();
-  const { signOut, getToken } = useAuth();
+  const { signOut } = useAuth(); // Prendiamo solo 'signOut' da qui
   const router = useRouter();
-  const [usageCount, setUsageCount] = useState<number | null>(null);
-  const [usageLimit, setUsageLimit] = useState<number | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // <-- Stato per il modale
+  
+  // Utilizza i dati e le funzioni direttamente dal Context.
+  // NON ci sono più stati locali per usageCount, usageLimit, userTier.
+  const { usageCount, usageLimit, userTier, fetchUserStatus } = useUsage();
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Questo useEffect serve solo a caricare i dati la prima volta che l'utente è autenticato.
   useEffect(() => {
-    const fetchUsage = async () => {
-        if (!isLoaded || !isSignedIn) {
-            setUsageCount(null);
-            setUsageLimit(null);
-            return;
-        }
-        try {
-            const token = await getToken();
-            if (!token) return;
-            const headers: HeadersInit = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-            const response = await fetch(`${apiUrl}/user-status`, { method: 'GET', headers: headers });
-            if (!response.ok) return;
-            const data = await response.json();
-            setUsageCount(data.count);
-            setUsageLimit(data.limit);
-        } catch (error) {
-            console.error('Errore recupero stato utente (Navbar):', error);
-        }
-    };
-    fetchUsage();
-  }, [isLoaded, isSignedIn, getToken]);
+    if (isLoaded && isSignedIn) {
+      fetchUserStatus();
+    }
+  }, [isLoaded, isSignedIn, fetchUserStatus]);
 
   const handleLogout = async () => {
     try {
+      // Al logout, reindirizziamo al login
       await signOut(() => router.push('/login'));
     } catch (error) {
       console.error('Errore durante il logout:', error);
@@ -50,7 +38,7 @@ export default function Navbar() {
   };
 
   return (
-    <> {/* Usa un Fragment per includere Navbar e Modale */}
+    <>
       <nav className="fixed w-full z-40 bg-gray-900 border-b border-gray-700 shadow-lg py-4 px-8 md:px-12 flex justify-between items-center">
         <div className="flex items-center">
           <Link href="/" className="text-3xl font-extrabold text-blue-400 hover:text-blue-300 transition-colors duration-200">
@@ -61,12 +49,15 @@ export default function Navbar() {
         {/* Menu Hamburger per mobile */}
         <div className="md:hidden">
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white focus:outline-none">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}></path></svg>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}></path>
+            </svg>
           </button>
         </div>
 
         {/* Links e Bottoni per desktop e menu mobile */}
         <div className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-8 absolute md:static top-full left-0 w-full md:w-auto bg-gray-900 md:bg-transparent p-8 md:p-0 border-t md:border-t-0 border-gray-700 shadow-lg md:shadow-none`}>
+          
           <Link href="/text-validator-ai" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">Text Validator AI</Link>
           <Link href="/roadmap" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">Roadmap</Link>
           <Link href="/use-cases" className="text-gray-300 hover:text-blue-300 text-lg font-semibold transition-colors duration-200">Use Cases</Link>
@@ -81,32 +72,30 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
-              {/* Pulsante Ingranaggio */}
               <button onClick={() => setIsSettingsOpen(true)} className="text-gray-400 hover:text-white transition-colors">
                 <GearIcon className="w-6 h-6" />
               </button>
 
+              {/* Contatore che legge i dati direttamente dal Context */}
               {usageCount !== null && usageLimit !== null && (
                 <div className="text-sm text-gray-300 bg-gray-700 px-3 py-1 rounded-md shadow-sm">
-                  {usageLimit === -1 ? ( <span>Utilizzo: Illimitato</span> ) : ( <span>Chiamate: {usageCount} / {usageLimit}</span> )}
+                    {usageLimit === -1 
+                        ? (<span>Utilizzo: Illimitato</span>) 
+                        : (<span>Chiamate: {usageCount} / {usageLimit}</span>)
+                    }
                 </div>
               )}
-              {/* === INIZIO BLOCCO DA MODIFICARE === */}
-              <button 
-                onClick={handleLogout} 
-                className="bg-red-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md"
-              >
-                {/* Ripristina il testo con l'email dell'utente */}
+
+              <button onClick={handleLogout} className="bg-red-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
                 Logout ({user?.emailAddresses[0]?.emailAddress || 'utente'})
               </button>
-              {/* === FINE BLOCCO DA MODIFICARE === */}
             </div>
           )}
         </div>
       </nav>
 
-      {/* Renderizza il Modale qui */}
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      {/* Il modale riceve 'userTier' direttamente dal Context */}
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} userTier={userTier} />
     </>
   );
 }

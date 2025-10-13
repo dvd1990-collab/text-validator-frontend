@@ -3,17 +3,21 @@
 
 import React from 'react';
 
+// Ho aggiornato l'interfaccia per ricevere 'userTier' come suggerito nel piano d'azione
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userTier: string; 
 }
 
-export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export default function SettingsModal({ isOpen, onClose, userTier }: SettingsModalProps) {
   if (!isOpen) return null;
 
   const handleStripeClick = () => {
     alert("La gestione dell'abbonamento tramite Stripe sarà disponibile a breve.");
   };
+  
+  // LA PARENTESI SBAGLIATA E' STATA RIMOSSA DA QUI
 
   return (
     // Overlay di sfondo
@@ -24,7 +28,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       {/* Contenitore del modale */}
       <div
         className="relative w-full max-w-lg rounded-xl bg-gray-800 p-8 shadow-2xl border border-gray-700"
-        onClick={(e) => e.stopPropagation()} // Impedisce la chiusura cliccando all'interno del modale
+        onClick={(e) => e.stopPropagation()} 
       >
         {/* Pulsante di chiusura */}
         <button
@@ -63,7 +67,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="flex items-center justify-between rounded-lg bg-gray-700 p-4 border border-gray-600">
             <div>
               <p className="text-gray-400">Piano attuale:</p>
-              <p className="text-xl font-bold text-white">Free (Placeholder)</p> {/* Placeholder */}
+              {/* Usa la prop 'userTier' per mostrare il piano dinamicamente */}
+              <p className="text-xl font-bold text-white capitalize">{userTier}</p>
             </div>
             <button
               onClick={handleStripeClick}
