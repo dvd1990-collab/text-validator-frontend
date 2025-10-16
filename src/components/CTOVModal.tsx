@@ -27,10 +27,10 @@ const archetypes = ["The Sage (L'Esperto)", "The Ruler (Il Regnante)", "The Jest
 export default function CTOVModal({ isOpen, onClose, profileToEdit }: CTOVModalProps) {
   const [formData, setFormData] = useState<Omit<CTOVProfileData, 'id'>>({
     name: '',
-    mission: '', // Inizializziamo a stringa vuota per il form
+    mission: '',
     archetype: archetypes[0],
-    tone_traits: [],
-    banned_terms: [],
+    tone_traits: [], // Inizializza SEMPRE come array vuoto
+    banned_terms: [], // Inizializza SEMPRE come array vuoto
   });
   
   const [toneTraitInput, setToneTraitInput] = useState('');
@@ -46,9 +46,10 @@ export default function CTOVModal({ isOpen, onClose, profileToEdit }: CTOVModalP
     if (profileToEdit) {
       setFormData({
         name: profileToEdit.name || '',
-        // Usiamo l'operatore '||' per assicurarci di passare sempre una stringa/array al form
         mission: profileToEdit.mission || '',
         archetype: profileToEdit.archetype || archetypes[0],
+        // Usiamo '|| []' per garantire che, se il dato è null o undefined,
+        // lo stato venga impostato su un array vuoto.
         tone_traits: profileToEdit.tone_traits || [],
         banned_terms: profileToEdit.banned_terms || [],
       });
@@ -66,13 +67,13 @@ export default function CTOVModal({ isOpen, onClose, profileToEdit }: CTOVModalP
   };
 
   const addToList = (listName: 'tone_traits' | 'banned_terms', value: string) => {
-    if (value.trim() && !formData[listName].includes(value.trim())) {
-      setFormData(prev => ({ ...prev, [listName]: [...prev[listName], value.trim()] }));
+    if (value.trim() && !formData[listName]?.includes(value.trim())) { // Aggiunto '?' per sicurezza extra
+      setFormData(prev => ({ ...prev, [listName]: [...(prev[listName] || []), value.trim()] })); // Aggiunto '|| []'
     }
   };
 
   const removeFromList = (listName: 'tone_traits' | 'banned_terms', valueToRemove: string) => {
-    setFormData(prev => ({ ...prev, [listName]: prev[listName].filter(item => item !== valueToRemove) }));
+    setFormData(prev => ({ ...prev, [listName]: (prev[listName] || []).filter(item => item !== valueToRemove) }));
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
