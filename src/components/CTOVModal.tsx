@@ -153,7 +153,7 @@ export default function CTOVModal({ isOpen, onClose, profileToEdit }: CTOVModalP
                 <button type="button" onClick={() => { addToList('tone_traits', toneTraitInput); setToneTraitInput(''); }} className="btn-secondary rounded-l-none px-4">Aggiungi</button>
               </div>
               <div className="mt-2 space-x-2">
-                {formData.tone_traits.map(trait => (
+                {formData.tone_traits?.map(trait => (
                   <span key={trait} className="inline-flex items-center bg-blue-800 text-blue-200 text-sm font-medium px-2.5 py-0.5 rounded-full">
                     {trait}
                     <button type="button" onClick={() => removeFromList('tone_traits', trait)} className="ml-1.5 text-blue-300 hover:text-white">&times;</button>
@@ -169,7 +169,7 @@ export default function CTOVModal({ isOpen, onClose, profileToEdit }: CTOVModalP
                 <button type="button" onClick={() => { addToList('banned_terms', bannedTermInput); setBannedTermInput(''); }} className="btn-secondary rounded-l-none px-4">Aggiungi</button>
               </div>
               <div className="mt-2 space-x-2">
-                 {formData.banned_terms.map(term => (
+                 {formData.banned_terms?.map(term => (
                   <span key={term} className="inline-flex items-center bg-red-800 text-red-200 text-sm font-medium px-2.5 py-0.5 rounded-full">
                     {term}
                     <button type="button" onClick={() => removeFromList('banned_terms', term)} className="ml-1.5 text-red-300 hover:text-white">&times;</button>
