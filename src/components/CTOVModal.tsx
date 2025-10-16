@@ -9,16 +9,17 @@ import { useUsage } from '@/context/UsageContext';
 interface CTOVProfileData {
   id?: string;
   name: string;
-  mission: string;
-  archetype: string;
-  tone_traits: string[];
-  banned_terms: string[];
+  mission?: string;       // Da 'string' a 'string | undefined'
+  archetype?: string;     // Da 'string' a 'string | undefined'
+  tone_traits?: string[]; // Da 'string[]' a 'string[] | undefined'
+  banned_terms?: string[];// Da 'string[]' a 'string[] | undefined'
 }
 
 interface CTOVModalProps {
   isOpen: boolean;
   onClose: () => void;
-  profileToEdit?: CTOVProfileData | null; // Profilo opzionale per la modalità di modifica
+  // Ora il tipo richiesto dalla prop è coerente con quello che gli passiamo
+  profileToEdit?: CTOVProfileData | null;
 }
 
 const archetypes = ["The Sage (L'Esperto)", "The Ruler (Il Regnante)", "The Jester (Il Giullare)", "The Everyman (La Persona Comune)"];
@@ -26,7 +27,7 @@ const archetypes = ["The Sage (L'Esperto)", "The Ruler (Il Regnante)", "The Jest
 export default function CTOVModal({ isOpen, onClose, profileToEdit }: CTOVModalProps) {
   const [formData, setFormData] = useState<Omit<CTOVProfileData, 'id'>>({
     name: '',
-    mission: '',
+    mission: '', // Inizializziamo a stringa vuota per il form
     archetype: archetypes[0],
     tone_traits: [],
     banned_terms: [],
@@ -45,6 +46,7 @@ export default function CTOVModal({ isOpen, onClose, profileToEdit }: CTOVModalP
     if (profileToEdit) {
       setFormData({
         name: profileToEdit.name || '',
+        // Usiamo l'operatore '||' per assicurarci di passare sempre una stringa/array al form
         mission: profileToEdit.mission || '',
         archetype: profileToEdit.archetype || archetypes[0],
         tone_traits: profileToEdit.tone_traits || [],
