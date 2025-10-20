@@ -155,47 +155,47 @@ const integratedWorkflows: Workflow[] = [
     {
         title: "Workflow: Lancio di una Campagna Marketing a Prova di Rischio",
         scenario: "Una PMI SaaS sta lanciando una nuova funzionalità basata su AI. L'obiettivo è creare una campagna digitale completa (landing page, email, social) che sia persuasiva, allineata al brand e conforme alle normative GDPR e sulla pubblicità.",
-        initialInput: "Brief per la campagna \"Project Insight\"\nProdotto: nuova feature di analisi predittiva nel nostro CRM. Usa AI per prevedere quali lead hanno più probabilità di chiudere.\nTarget: Direttori Vendite in aziende B2B tech.\nBenefici chiave: aumenta il tasso di conversione, fa risparmiare tempo ai sales, migliora l'accuratezza delle previsioni di vendita.\nOfferta di lancio: Prova gratuita di 30 giorni della feature per i primi 100 che si registrano.\nMessaggio principale: \"Smetti di tirare a indovinare. Il nostro AI ti dice su quali clienti puntare.\"\nCanali: Landing page, email alla nostra lista, 3 post per LinkedIn.\nDobbiamo essere aggressivi, dire che è la soluzione migliore sul mercato.\nObiettivo: 500 registrazioni alla prova gratuita nel primo mese.",
-		imageSrc: "/WF1.png", 
+        initialInput: "Brief per la campagna \"Project Insight\"\nProdotto: nuova feature di analisi predittiva nel nostro CRM. Usa AI per prevedere quali lead hanno più probabilità di chiudere.\nTarget: Direttori Vendite in aziende B2B tech.\nBenefici chiave: aumenta il tasso di conversione, fa risparmiare tempo ai sales, migliora l'accuratezza delle previsioni.\nOfferta di lancio: Prova gratuita di 30 giorni.\nMessaggio principale: \"Smetti di tirare a indovinare. Il nostro AI ti dice su quali clienti puntare.\"\nDobbiamo essere aggressivi, dire che è la soluzione migliore sul mercato.\nObiettivo: 500 registrazioni alla prova gratuita.",
+        imageSrc: "/WF1.png",
         steps: [
-            { module: 'strategist', profile: "Pianificatore di Strategia Go-to-Market (GTM)", action: "Il brief grezzo viene trasformato in una strategia di comunicazione multicanale completa, con messaggi chiave differenziati e angoli narrativi per ogni canale." },
-            { module: 'validator', profile: "Scrittore Testi per Landing Page", action: "I messaggi chiave per la landing page vengono espansi in un copy di vendita fluente e persuasivo, allineato al Custom Tone of Voice aziendale." },
-            { module: 'compliance', profile: "Validatore Claim Pubblicitari", action: "Il testo finale viene analizzato. Il claim 'la soluzione migliore sul mercato' viene segnalato e riformulato, e il form di contatto viene verificato per la conformità GDPR." }
+            { module: 'strategist', profile: "Pianificatore di Strategia Go-to-Market (GTM)", action: "Il brief grezzo viene trasformato in una strategia di comunicazione multicanale completa, con messaggi chiave e angoli narrativi per ogni canale.", output: "" },
+            { module: 'validator', profile: "Scrittore Testi per Landing Page", action: "I messaggi chiave per la landing page vengono espansi in un copy di vendita fluente e persuasivo, allineato al Custom Tone of Voice aziendale.", output: "" },
+            { module: 'compliance', profile: "Validatore Claim Pubblicitari", action: "Il testo finale viene analizzato. Il claim 'la soluzione migliore sul mercato' viene segnalato e riformulato, e il form di contatto viene verificato per la conformità GDPR.", output: "" }
         ],
-        presentationGuide: {
-            visual: "Una rappresentazione a 'swimlane' orizzontale. Un'icona (l'asset della campagna) si muove da sinistra a destra, trasformandosi a ogni fase: da 'appunti' a 'documento strutturato', poi 'testo brillante' e infine 'documento con scudo'.",
-            narrative: "Enfatizzare il flusso continuo e la sicurezza: 'Idea -> Strategia -> Testo Perfetto -> Lancio Sicuro. Il tuo intero processo di marketing, orchestrato in un'unica piattaforma.'"
+        presentationGuide: { 
+            visual: "Una rappresentazione a 'swimlane' orizzontale che mostra la trasformazione di un asset da idea (appunti) a strategia (documento), a copy perfetto (testo brillante) e infine a asset sicuro (scudo).",
+            narrative: "Idea -> Strategia -> Testo Perfetto -> Lancio Sicuro. Il tuo intero processo di marketing, orchestrato in un'unica piattaforma."
         }
     },
     {
         title: "Workflow: Dalla Due Diligence all'Offerta di Acquisizione",
         scenario: "Un team di corporate development sta valutando l'acquisizione di una startup. Devono analizzare rapidamente i documenti in data room (contratti, bilanci) per identificare rischi/opportunità e preparare una bozza di term sheet non vincolante.",
         initialInput: "(Dal contratto con il cliente più grande) \"Il Cliente avrà diritto a un'esclusiva sui Servizi nel settore FinTech per l'intera durata del presente Accordo, che si rinnoverà automaticamente per periodi di 24 mesi...\"\n(Dal bilancio) \"Anno 2022: Ricavi 1.5M €, Perdita Netta (300k €). Anno 2023: Ricavi 2.5M €, Utile Netto 300k €. La concentrazione dei ricavi è elevata, con il 60% del fatturato generato da un singolo cliente.\"\n(Dalla descrizione della tecnologia) \"La nostra piattaforma si basa su un algoritmo proprietario di machine learning (in attesa di brevetto)...\"",
-		imageSrc: "/WF2.png", 
+        imageSrc: "/WF2.png", 
         steps: [
-            { module: 'interpreter', profile: "Analista Contratto di Vendita", action: "I documenti vengono analizzati per estrarre automaticamente dati critici e 'red flag': clausole di rischio (esclusiva, concentrazione clienti), termini di rinnovo e trend finanziari." },
-            { module: 'strategist', profile: "Strutturatore di Pitch per Investitori (Outline)", action: "Le 'red flag' e i punti di forza estratti vengono usati come input per generare un'analisi SWOT della target company e, successivamente, una bozza strutturata di term sheet non vincolante." },
-            { module: 'validator', profile: "Generico", action: "La bozza del term sheet e la sintesi SWOT vengono raffinate per renderle chiare, concise e adatte a un pubblico di alto livello come il consiglio di amministrazione." }
+            { module: 'interpreter', profile: "Analista Contratto di Vendita", action: "I documenti vengono analizzati per estrarre automaticamente dati critici e 'red flag': clausole di rischio (esclusiva, concentrazione clienti), termini di rinnovo e trend finanziari.", output: "" },
+            { module: 'strategist', profile: "Strutturatore di Pitch per Investitori (Outline)", action: "Le 'red flag' e i punti di forza estratti vengono usati come input per generare un'analisi SWOT della target company e, successivamente, una bozza strutturata di term sheet non vincolante.", output: "" },
+            { module: 'validator', profile: "Generico", action: "La bozza del term sheet e la sintesi SWOT vengono raffinate per renderle chiare, concise e adatte a un pubblico di alto livello come il consiglio di amministrazione.", output: "" }
         ],
-        presentationGuide: {
-            visual: "Un diagramma a imbuto. In alto, una pioggia di icone 'documento' entra nell'imbuto. L'imbuto si restringe passando per le tre fasi. Alla fine, esce un'unica icona a forma di 'diamante', a simboleggiare il valore estratto.",
-            narrative: "Focus sulla velocità e la fiducia: 'Dalla Complessità alla Chiarezza Strategica. Analizza giorni di documenti in minuti, struttura la tua offerta e presentala con la massima fiducia.'"
+        presentationGuide: { 
+            visual: "Un diagramma a imbuto. In alto, una pioggia di documenti diversi entra nell'imbuto. Alla fine, esce un singolo 'diamante', a simboleggiare il valore e la chiarezza estratti dalla complessità.",
+            narrative: "Dalla Complessità alla Chiarezza Strategica. Analizza giorni di documenti in minuti, struttura la tua offerta e presentala con la massima fiducia."
         }
     },
     {
         title: "Workflow: Sviluppo e Implementazione di una Nuova Policy HR",
         scenario: "Il dipartimento HR deve creare e comunicare una nuova policy sul lavoro da remoto. Il processo deve essere efficiente, garantire che la policy sia equa e conforme, e la comunicazione ai dipendenti deve essere chiara e positiva.",
         initialInput: "Email dal CEO al Resp. HR:\nOggetto: Nuova policy lavoro da remoto\nCiao,\ndobbiamo formalizzare la nostra policy sul remote work, sta diventando un far west.\nPunti da includere:\n- Fino a 3 giorni a settimana da remoto.\n- 2 giorni obbligatori in ufficio per tutti per la collaborazione.\n- Budget una tantum di 500 € per la postazione a casa.\n- Per chi usa il proprio laptop (BYOD), serve sicurezza: antivirus aziendale e VPN obbligatori.\n- Chiarire aspettative su orari e reperibilità.\nPrepara una bozza di policy completa. Grazie.",
-		imageSrc: "/WF3.png", 
+        imageSrc: "/WF3.png", 
         steps: [
-            { module: 'strategist', profile: "Generatore di Policy Aziendali (Bozza Strategica)", action: "Il brief informale del CEO viene espanso in una bozza di policy completa e professionale, organizzata in sezioni logiche (Scopo, Eleggibilità, Sicurezza, etc.)." },
-            { module: 'compliance', profile: "Verificatore Anti-Bias Annunci Lavoro", action: "La bozza viene analizzata per identificare potenziali aree di rischio, come implicazioni sulla privacy per il software su dispositivi personali (BYOD) o rischi di trattamenti non equi tra dipendenti." },
-            { module: 'interpreter', profile: "Sintetizzatore di Meeting e Trascrizioni", action: "La policy finale e densa viene data in input per generare due output: una sintesi di una pagina per i manager e una lista di FAQ per tutti i dipendenti in linguaggio semplice." },
-            { module: 'validator', profile: "L'Umanizzatore", action: "Utilizzando le FAQ e la sintesi, viene redatta l'email di annuncio ufficiale, applicando il Custom Tone of Voice aziendale ('trasparente e di supporto') per un messaggio positivo." }
+            { module: 'strategist', profile: "Generatore di Policy Aziendali (Bozza Strategica)", action: "Il brief informale del CEO viene espanso in una bozza di policy completa e professionale, organizzata in sezioni logiche (Scopo, Eleggibilità, Sicurezza, etc.).", output: "" },
+            { module: 'compliance', profile: "Verificatore Anti-Bias Annunci Lavoro", action: "La bozza viene analizzata per identificare potenziali aree di rischio, come implicazioni sulla privacy per il software su dispositivi personali (BYOD) o rischi di trattamenti non equi tra dipendenti.", output: "" },
+            { module: 'interpreter', profile: "Sintetizzatore di Meeting e Trascrizioni", action: "La policy finale e densa viene data in input per generare due output: una sintesi di una pagina per i manager e una lista di FAQ per tutti i dipendenti in linguaggio semplice.", output: "" },
+            { module: 'validator', profile: "L'Umanizzatore", action: "Utilizzando le FAQ e la sintesi, viene redatta l'email di annuncio ufficiale, applicando il Custom Tone of Voice aziendale ('trasparente e di supporto') per un messaggio positivo.", output: "" }
         ],
         presentationGuide: {
-            visual: "Un'infografica 'step-by-step' che mostra il ciclo di vita: Idea -> Documento con Scudo (Compliance) -> Documento scomposto in pezzi (Sintesi/FAQ) -> Megafono (Comunicazione).",
-            narrative: "Sottolineare la completezza del supporto: 'Crea Policy Efficaci e Sicure. Dalla bozza alla comunicazione, un flusso integrato che protegge l'azienda e coinvolge i dipendenti.'"
+            visual: "Un'infografica 'step-by-step' che mostra il ciclo: Idea -> Protezione (Scudo) -> Semplificazione (Pezzi più piccoli) -> Diffusione (Megafono).",
+            narrative: "Crea Policy Efficaci e Sicure. Dalla bozza alla comunicazione, un flusso integrato che protegge l'azienda e coinvolge i dipendenti."
         }
     },
 ];
