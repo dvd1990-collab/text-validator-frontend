@@ -27,6 +27,7 @@ type Workflow = {
   title: string;
   scenario: string;
   initialInput: string;
+  imageSrc: string;
   steps: WorkflowStep[];
   presentationGuide: {
     visual: string;
