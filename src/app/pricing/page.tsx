@@ -81,7 +81,7 @@ export default function PricingPage() {
                             <li className="flex items-start"><span className="text-green-500 mr-2">✓</span><span>Limite 15.000 caratteri</span></li>
                             <li className="flex items-start"><span className="text-green-500 mr-2">✓</span><span><strong>12 Profili Validator</strong> avanzati</span></li>
                             <li className="flex items-start"><span className="text-green-500 mr-2">✓</span><span><strong>4 Profili Interpreter</strong> per l'analisi</span></li>
-                            <li className="flex items-start"><span className="text-yellow-400 mr-2">★</span><span><strong>Assaggio di Strategist & Compliance</strong></span></li>
+                            <li className="flex items-start"><span className="text-yellow-400 mr-2">★</span><span><strong>Prova di Strategist & Compliance</strong></span></li>
                             <li className="flex items-start"><span className="text-green-500 mr-2">✓</span><span>Controllo di Qualità AI²™</span></li>
                             <li className="flex items-start"><span className="text-green-500 mr-2">✓</span><span><strong>Fino a 2</strong> Voci Personalizzate (CTOV)</span></li>
                         </ul>
@@ -160,7 +160,7 @@ export default function PricingPage() {
                     <h3 className="text-2xl font-semibold text-white mb-6">Piano Starter</h3>
                     <div className="space-y-6">
                         <div>
-                            <h4 className="font-bold text-purple-300 mb-2">Strategist (Assaggio di {starterProfiles.strategist.length} Profili)</h4>
+                            <h4 className="font-bold text-purple-300 mb-2">Strategist (Prova di {starterProfiles.strategist.length} Profili)</h4>
                             <ul className="list-disc list-inside text-gray-400 space-y-1">{starterProfiles.strategist.map(p => <li key={p}>{p}</li>)}</ul>
                         </div>
                          <div>
@@ -172,7 +172,7 @@ export default function PricingPage() {
                             <ul className="list-disc list-inside text-gray-400 space-y-1">{starterProfiles.interpreter.map(p => <li key={p}>{p}</li>)}</ul>
                         </div>
                         <div>
-                            <h4 className="font-bold text-yellow-300 mb-2">Compliance Checkr (Assaggio di {starterProfiles.compliance.length} Profili)</h4>
+                            <h4 className="font-bold text-yellow-300 mb-2">Compliance Checkr (Prova di {starterProfiles.compliance.length} Profili)</h4>
                             <ul className="list-disc list-inside text-gray-400 space-y-1">{starterProfiles.compliance.map(p => <li key={p}>{p}</li>)}</ul>
                         </div>
                     </div>
