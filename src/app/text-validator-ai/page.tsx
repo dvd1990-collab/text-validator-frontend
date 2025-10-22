@@ -1,6 +1,6 @@
 // src/app/text-validator-ai/page.tsx
 "use client";
-
+import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
 
@@ -136,9 +136,56 @@ const allProfilesData = {
 
 type ModuleKey = keyof typeof allProfilesData;
 
+const moduleDetails = {
+    strategist: {
+        title: "Trasforma le Idee in Piani d'Azione.",
+        text: "Non partire mai più da una pagina bianca. Strategist AI è il tuo consulente strategico on-demand che ti aiuta a definire le fondamenta di ogni progetto, dal business plan alla campagna marketing.",
+        bullets: [
+            "Sviluppare un Business Model Canvas completo.",
+            "Definire Buyer Personas dettagliate per il tuo target.",
+            "Pianificare una strategia Go-to-Market (GTM).",
+            "Generare brief creativi per le tue campagne pubblicitarie."
+        ],
+        image: "/strategist-module.png"
+    },
+    validator: {
+        title: "Rendi Ogni Parola Efficace e Coerente.",
+        text: "La coerenza è fiducia. Validator AI non è un semplice correttore grammaticale: è il guardiano del tuo brand. Perfeziona il tono, adatta lo stile al canale e trasforma testi buoni in documenti che convertono.",
+        bullets: [
+            "Scrivere proposte commerciali persuasive.",
+            "Ottimizzare il copy di landing page e email di vendita.",
+            "Redigere annunci di lavoro inclusivi e professionali.",
+            "\"Umanizzare\" testi generati da altre AI per un tocco più autentico."
+        ],
+        image: "/validator-module.png"
+    },
+    interpreter: {
+        title: "Estrai Valore da Qualsiasi Testo.",
+        text: "I tuoi documenti sono una miniera di dati. Interpreter AI è lo strumento che ti permette di analizzare contratti, sintetizzare report e capire i feedback dei clienti in pochi secondi, non in ore.",
+        bullets: [
+            "Analizzare un contratto di fornitura per identificare clausole critiche.",
+            "Sintetizzare le trascrizioni di lunghe riunioni in punti chiave.",
+            "Estrarre dati strutturati da ricerche di mercato.",
+            "Analizzare i feedback dei clienti per trovare insight azionabili."
+        ],
+        image: "/interpreter-module.png"
+    },
+    compliance: {
+        title: "Naviga la Complessità Normativa con Sicurezza.",
+        text: "La conformità non è un'opzione. Compliance Checkr è il tuo consulente legale virtuale che analizza i tuoi testi per verificare la conformità a normative chiave, riducendo rischi e costi legali.",
+        bullets: [
+            "Verificare che le tue comunicazioni di marketing rispettino il GDPR.",
+            "Analizzare i disclaimer del tuo e-commerce.",
+            "Controllare che gli annunci di lavoro non contengano bias discriminatori.",
+            "Validare i \"green claim\" secondo le direttive CSRD."
+        ],
+        image: "/compliance-module.png"
+    }
+};
 
 export default function TextValidatorAIPage() {
-  const [activeTab, setActiveTab] = useState<ModuleKey>('strategist');
+  const [activeDetailTab, setActiveDetailTab] = useState<ModuleKey>('strategist');
+  const [activeProfileTab, setActiveProfileTab] = useState<ModuleKey>('strategist');
 
   const getModuleStyles = (module: ModuleKey) => {
     switch (module) {
@@ -152,165 +199,171 @@ export default function TextValidatorAIPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-gray-900 p-8 text-white">
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-6xl">
 
-        {/* --- SEZIONE HERO (TESTI RIVISTI) --- */}
+        {/* --- SEZIONE 1: HERO --- */}
         <header className="mb-24 text-center">
           <h1 className="text-5xl md:text-6xl font-extrabold text-blue-400 mb-6 leading-tight">
-            Il Tuo Sistema Operativo per l'Intelligenza Documentale
+            Dall'Idea al Documento Finale.
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Smetti di destreggiarti tra gli strumenti. Orchestra strategia, perfezionamento, analisi e conformità in un unico flusso di lavoro integrato. Dall'idea al documento finale, con la fiducia di un esperto AI al tuo fianco.
-          </p>
-           <div className="mt-10">
-              <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full transition-all duration-300 shadow-lg text-lg">
-                  Inizia Gratis
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-300 max-w-4xl mx-auto">
+            L'unica suite AI che orchestra strategia, perfezionamento, analisi e conformità in un unico flusso di lavoro. Smetti di destreggiarti tra gli strumenti, riprendi il controllo.
+          </h2>
+           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full transition-all duration-300 shadow-lg text-lg w-full sm:w-auto">
+                  Inizia Gratis e Rivoluziona il Tuo Lavoro
+              </Link>
+              <Link href="/use-cases" className="text-blue-300 hover:text-white font-semibold py-4 px-8 transition-colors text-lg">
+                  Guarda la demo in 60 secondi &rarr;
               </Link>
           </div>
+          {/* Placeholder per l'animazione/video */}
+          <div className="mt-12 w-full overflow-hidden rounded-lg border border-gray-700">
+			  <video 
+				src="/hero-workflow-animation.mp4" 
+				autoPlay 
+				loop 
+				muted 
+				playsInline
+				className="w-full h-full object-cover"
+			  >
+				Your browser does not support the video tag.
+			  </video>
+			</div>
         </header>
 
-        {/* --- SEZIONE PROBLEMA / AGITAZIONE (NUOVA) --- */}
-        <section className="mb-24 py-16">
-          <h2 className="text-4xl font-bold text-center text-blue-300 mb-4">Il Caos Costa.</h2>
-          <h2 className="text-4xl font-bold text-center text-blue-300 mb-12">La Frammentazione Uccide la Produttività.</h2>
-          <p className="text-lg text-center text-gray-400 max-w-3xl mx-auto">
-            Il tuo flusso di lavoro è un puzzle di app che non comunicano tra loro? Passi ore a copiare e incollare da un tool di brainstorming a un editor, per poi esportare dati su un foglio di calcolo e infine chiedere una revisione via email? Questo non è solo inefficiente: è un costo nascosto che si mangia tempo, introduce errori e mette a rischio la coerenza del tuo brand.
+        {/* --- SEZIONE 2: IL PROBLEMA --- */}
+        <section className="mb-24 py-16 text-center">
+          <h2 className="text-4xl font-bold text-blue-300 mb-6">Il Caos Costa. La Frammentazione Uccide la Produttività.</h2>
+          <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-10">
+            Quante schede hai aperto in questo momento? Un documento per le idee, un altro per la bozza, un foglio di calcolo per i dati, un sito legale per le normative. Ogni copia-incolla è un'opportunità di errore. Ogni cambio di piattaforma è una perdita di coerenza. Questo non è lavorare, è sopravvivere. La tua energia non dovrebbe essere sprecata a gestire strumenti, ma a creare valore.
           </p>
+          <div className="max-w-lg mx-auto rounded-lg border border-gray-700 overflow-hidden">
+			  <Image
+				src="/split-screen-chaos-control.png"
+				alt="Un confronto tra un flusso di lavoro caotico e uno controllato e sinergico"
+				width={1200} // Imposta la larghezza reale dell'immagine
+				height={600} // Imposta l'altezza reale dell'immagine
+				className="w-full h-auto"
+			  />
+			</div>
         </section>
 
-        {/* --- SEZIONE SOLUZIONE / FLUSSO DI LAVORO (NUOVA) --- */}
-        <section className="mb-24 py-16">
-            <h2 className="text-4xl font-bold text-center text-blue-300 mb-12">Dal Caos al Controllo: Benvenuto nel Tuo Hub Documentale Unificato</h2>
-            <p className="text-lg text-center text-gray-400 max-w-3xl mx-auto mb-16">
-                Text Validator AI non è un altro strumento. È la piattaforma che unifica il tuo intero processo. Abbiamo trasformato un flusso di lavoro frammentato in un sistema operativo intelligente, dove ogni fase è connessa alla successiva. I nostri quattro moduli lavorano in perfetta sinergia per darti un controllo senza precedenti.
+        {/* --- SEZIONE 3: LA SOLUZIONE --- */}
+        <section className="mb-24 py-16 text-center">
+            <h2 className="text-4xl font-bold text-blue-300 mb-6">Il Tuo Sistema Operativo per l'Intelligenza Documentale.</h2>
+            <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-16">
+                Abbiamo integrato l'intero ciclo di vita del documento in un unico flusso di lavoro intelligente, dove ogni fase potenzia la successiva.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-                <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-                    <h3 className="text-2xl font-semibold text-purple-400 mb-3">Strategist AI</h3>
-                    <p className="text-gray-400">Idea e pianifica con una visione chiara.</p>
-                </div>
-                <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-                    <h3 className="text-2xl font-semibold text-blue-400 mb-3">Validator AI</h3>
-                    <p className="text-gray-400">Scrivi, perfeziona e allinea al tuo brand.</p>
-                </div>
-                <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-                    <h3 className="text-2xl font-semibold text-green-400 mb-3">Interpreter AI</h3>
-                    <p className="text-gray-400">Analizza e trasforma i dati in insight.</p>
-                </div>
-                 <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-                    <h3 className="text-2xl font-semibold text-yellow-400 mb-3">Compliance Checkr</h3>
-                    <p className="text-gray-400">Verifica e distribuisci in totale sicurezza.</p>
-                </div>
-            </div>
-        </section>
-
-        {/* --- SEZIONE SINERGIA / CICLO DI VITA (TESTI RIVISTI E NUOVA IMMAGINE) --- */}
-        <section className="mb-24 py-16">
-          <h2 className="text-4xl font-bold text-center text-blue-300 mb-12">Ogni Documento ha un Ciclo di Vita. Noi lo Gestiamo per Intero.</h2>
-          <div className="flex flex-col md:flex-row items-center justify-around gap-12">
-            <div className="md:w-1/2">
-              <img 
-                src="/synergy-workflow.png" // NUOVA IMMAGINE
-                alt="Diagramma del ciclo di vita del documento in 4 fasi: Ideazione, Perfezionamento, Analisi, Verifica" 
-                className="rounded-lg shadow-xl w-full h-auto object-cover"
-              />
-            </div>
-            <div className="md:w-1/2 space-y-6">
-              <p className="text-gray-300 text-lg mb-6">
-                Un documento di valore non nasce per caso. Segue un percorso preciso, dall'ispirazione alla distribuzione. La nostra suite è progettata per orchestrare ogni singola fase, trasformando il potenziale in performance.
-              </p>
-              <ul className="space-y-4">
-                  <li><strong className="text-purple-400">Fase 1: Ideazione (Strategist AI).</strong> Non partire da una pagina bianca. Costruisci fondamenta solide definendo strategie e strutturando le tue idee.</li>
-                  <li><strong className="text-blue-400">Fase 2: Perfezionamento (Validator AI).</strong> Trasforma le idee in parole che convertono. Affina il tuo messaggio per la massima chiarezza e coerenza.</li>
-                  <li><strong className="text-green-400">Fase 3: Analisi (Interpreter AI).</strong> Estrai valore nascosto. Scopri insight critici da contratti, report e feedback per darti un vantaggio competitivo.</li>
-                  <li><strong className="text-yellow-400">Fase 4: Verifica (Compliance Checkr).</strong> Mitiga il rischio prima che diventi un problema. Proteggi la reputazione del tuo business.</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-		
-		{/* --- SEZIONE CUSTOM TONE OF VOICE (TESTI RIVISTI E NUOVA IMMAGINE) --- */}
-        <section className="mb-24 py-16 bg-gray-800 rounded-xl shadow-lg border border-gray-700">
-          <h2 className="text-4xl font-bold text-center text-blue-300 mb-12">La Tua AI, la Tua Voce. Coerenza di Brand su Scala.</h2>
-          <div className="flex flex-col md:flex-row-reverse items-center justify-around gap-12 px-8">
-            <div className="md:w-1/2">
-              <img 
-                src="/ctov-infusion.png" // NUOVA IMMAGINE
-                alt="Visualizzazione di un'AI che apprende l'identità di un brand" 
-                className="rounded-lg shadow-xl w-full h-auto object-cover"
-              />
-            </div>
-            <div className="md:w-1/2 space-y-6 text-left">
-              <p className="text-gray-300 text-lg">
-                Il tuo brand ha una personalità unica. Ora anche la tua AI può averla. Con il Custom Tone of Voice, puoi "insegnare" alla nostra piattaforma le sfumature del tuo stile di comunicazione. Garantisci che il team vendite e il team marketing parlino la stessa lingua. Assicura che ogni email, proposta e annuncio di lavoro sia inconfondibilmente tuo. Centralizza la tua identità verbale e scala la coerenza in tutta l'organizzazione, senza sforzo.
-              </p>
-            </div>
-          </div>
-        </section>
-		
-		{/* --- SEZIONE SICUREZZA E CONVERSIONE (REINSERITA) --- */}
-        <section className="mb-24 py-16">
-		  <h2 className="text-4xl font-bold text-center text-blue-400 mb-12">Le Funzionalità che Trasformano il Tuo Business</h2>
-		  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-			{/* Blocco 1: Affidabilità e Conformità */}
-			<div className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
-			  <h3 className="text-3xl font-semibold text-blue-300 mb-4">Zero Rischi: Garanzia di Compliance e Brand Safety.</h3>
-			  <p className="text-gray-400 mb-6">Garantiamo che l'output sia formalmente corretto, mitigando il rischio di prompt injection e mantenendo la coerenza del tono per comunicazioni HR o di crisi.</p>
-			  <ul className="list-disc list-inside space-y-2 text-gray-300 pl-5">
-				<li><strong>No-Storage Policy:</strong> Massima conformità GDPR.</li>
-				<li><strong>Robustezza:</strong> Filtraggio di input malevoli.</li>
-			  </ul>
-			  <img 
-				src="/placeholder-compliance-image.png"
-				alt="Illustrazione di sicurezza e compliance GDPR" 
-				className="mt-8 rounded-lg shadow-md w-full h-48 object-cover"
+			<div className="max-w-lg mx-auto rounded-lg border border-gray-700 overflow-hidden">
+			  <Image
+				src="/workflow-icons.png"
+				alt="Immagine con 4 icone del flusso"
+				width={400} // Imposta la larghezza reale dell'immagine
+				height={200} // Imposta l'altezza reale dell'immagine
+				className="w-full h-auto"
 			  />
 			</div>
-
-			{/* Blocco 2: Efficienza e Persuasione */}
-			<div className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
-			  <h3 className="text-3xl font-semibold text-blue-300 mb-4">Massimizza la Conversione, Non la Revisione Manuale.</h3>
-			  <p className="text-gray-400 mb-6">La nostra AI è specializzata nell'infondere empatia e coerenza del brand nei tuoi testi, dalle newsletter alle email di vendita.</p>
-			  <ul className="list-disc list-inside space-y-2 text-gray-300 pl-5">
-				<li><strong>Riduzione Editing:</strong> Riduci il tempo di post-editing.</li>
-				<li><strong>Coerenza del Brand:</strong> Mantiene il tuo Tone of Voice.</li>
-				<li><strong>Output Persuasivo:</strong> Genera bozze ottimizzate e coinvolgenti.</li>
-			  </ul>
-			  <img 
-				src="/placeholder-persuasion-image.png"
-				alt="Illustrazione di copywriting persuasivo ed efficienza" 
-				className="mt-8 rounded-lg shadow-md w-full h-48 object-cover"
-			  />
-			</div>
-		  </div>
-		</section>
-		
-        {/* --- SEZIONE LIBRERIA PROFILI (NUOVA INTERFACCIA A SCHEDE) --- */}
-        <section className="py-16">
-            <h2 className="text-4xl font-bold text-center text-blue-400 mb-12">Un Esperto AI per Ogni Esigenza Specifica</h2>
-            
-            {/* Navigazione a Schede */}
+        </section>
+        
+        {/* --- SEZIONE 4: APPROFONDIMENTO DEI MODULI (CON TAB) --- */}
+        <section className="mb-24 py-16">
+            <h2 className="text-4xl font-bold text-center text-blue-300 mb-12">Un Flusso di Lavoro, Infinite Possibilità.</h2>
             <div className="mb-10 flex justify-center border-b border-gray-700">
-                {(Object.keys(allProfilesData) as ModuleKey[]).map((key) => {
+                {(Object.keys(moduleDetails) as ModuleKey[]).map((key) => {
                     const styles = getModuleStyles(key);
                     return (
                         <button
                             key={key}
-                            onClick={() => setActiveTab(key)}
-                            className={`px-6 py-3 text-xl font-semibold capitalize transition-colors ${activeTab === key ? `border-b-2 ${styles.border} text-white` : 'text-gray-400 hover:text-white'}`}
+                            onClick={() => setActiveDetailTab(key)}
+                            className={`px-6 py-3 text-xl font-semibold capitalize transition-colors ${activeDetailTab === key ? `border-b-2 ${styles.border} text-white` : 'text-gray-400 hover:text-white'}`}
                         >
                             {key}
                         </button>
                     );
                 })}
             </div>
+            <div className="bg-gray-800 p-8 md:p-12 rounded-lg border border-gray-700">
+                {(Object.keys(moduleDetails) as ModuleKey[]).map((key) => {
+                    const details = moduleDetails[key];
+                    const styles = getModuleStyles(key);
+                    return (
+                        <div key={key} className={`flex-col md:flex-row items-center gap-12 animate-fade-in ${activeDetailTab === key ? 'flex' : 'hidden'}`}>
+                            <div className="md:w-3/5">
+                                <h3 className={`text-3xl font-bold ${styles.accent} mb-4`}>{details.title}</h3>
+                                <p className="text-gray-300 text-lg mb-6">{details.text}</p>
+                                <ul className="space-y-2 list-disc list-inside text-gray-400">
+                                    {details.bullets.map(bullet => <li key={bullet}>{bullet}</li>)}
+                                </ul>
+                            </div>
+                            <div className="md:w-2/5 h-64 bg-gray-700 rounded-lg flex items-center justify-center">
+                                <p className="text-gray-500">Immagine ({details.image.replace("/", "")})</p>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </section>
 
-            {/* Contenuto delle Schede */}
+        {/* --- SEZIONE 5: CASI D'USO PER TARGET --- */}
+        <section className="mb-24 py-16 text-center">
+            <h2 className="text-4xl font-bold text-blue-300 mb-12">Creato per chi crea valore: PMI, Freelance e Team.</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+                    <h3 className="text-2xl font-semibold text-white mb-4">Per il Marketing Manager</h3>
+                    <p className="text-gray-400">Dalla strategia di contenuti alla validazione dei claim pubblicitari. Lancia campagne più velocemente e con meno rischi, mantenendo una voce del brand impeccabile su tutti i canali.</p>
+                </div>
+                <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+                    <h3 className="text-2xl font-semibold text-white mb-4">Per il Freelance e Consulente</h3>
+                    <p className="text-gray-400">Dalla stesura di una proposta commerciale vincente all'analisi dei contratti dei clienti. Offri un servizio più strategico, professionale e sicuro, ottimizzando il tuo tempo.</p>
+                </div>
+                <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+                    <h3 className="text-2xl font-semibold text-white mb-4">Per il Titolare di PMI</h3>
+                    <p className="text-gray-400">Dalla redazione di policy aziendali alla sintesi dei report di mercato. Prendi decisioni più rapide e informate, riducendo la dipendenza da consulenti esterni per le attività quotidiane.</p>
+                </div>
+            </div>
+        </section>
+
+        {/* --- SEZIONE 6: PROVA SOCIALE --- 
+        <section className="mb-24 py-16">
+            <h2 className="text-4xl font-bold text-center text-blue-300 mb-12">La fiducia di chi, come te, non lascia nulla al caso.</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+                    <p className="text-gray-300 italic mb-4">"Text Validator AI ha trasformato il nostro processo di creazione dei contenuti. Passare dalla strategia alla verifica GDPR nella stessa interfaccia ci ha fatto risparmiare almeno 10 ore a settimana."</p>
+                    <p className="font-semibold text-white">- Marco Rossi, CEO di una Startup Tech</p>
+                </div>
+                <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+                     <p className="text-gray-300 italic mb-4">"Come consulente, la mia reputazione è tutto. Usare Compliance Checkr per una prima analisi dei contratti mi dà una sicurezza incredibile prima di passare la palla al legale. Un valore inestimabile."</p>
+                    <p className="font-semibold text-white">- Giulia Bianchi, Consulente Marketing</p>
+                </div>
+                <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+                    <p className="text-gray-300 italic mb-4">"Finalmente uno strumento che capisce le esigenze di una PMI. Interpreter AI da solo vale l'intero abbonamento: analizzare i bandi di gara è diventato un processo di minuti, non di giorni."</p>
+                    <p className="font-semibold text-white">- Alessandro Verdi, Titolare di PMI</p>
+                </div>
+            </div>
+        </section>*/}
+
+        {/* --- SEZIONE 7: LIBRERIA PROFILI COMPLETA (CON TAB) --- */}
+        <section className="py-16">
+            <h2 className="text-4xl font-bold text-center text-blue-400 mb-12">Un Esperto AI per Ogni Esigenza Specifica</h2>
+            <div className="mb-10 flex justify-center border-b border-gray-700">
+                {(Object.keys(allProfilesData) as ModuleKey[]).map((key) => {
+                    const styles = getModuleStyles(key);
+                    return (
+                        <button
+                            key={key}
+                            onClick={() => setActiveProfileTab(key)}
+                            className={`px-6 py-3 text-xl font-semibold capitalize transition-colors ${activeProfileTab === key ? `border-b-2 ${styles.border} text-white` : 'text-gray-400 hover:text-white'}`}
+                        >
+                            {key}
+                        </button>
+                    );
+                })}
+            </div>
             <div className="animate-fade-in">
-                {Object.entries(allProfilesData[activeTab]).map(([category, profiles]) => (
+                {Object.entries(allProfilesData[activeProfileTab]).map(([category, profiles]) => (
                     <div key={category} className="mb-10">
-                    {/* --- CORREZIONE QUI --- */}
-                    <h3 className={`text-2xl font-semibold ${getModuleStyles(activeTab).accent} border-b-2 pb-2 mb-6 ${getModuleStyles(activeTab).border}`}>
+                    <h3 className={`text-2xl font-semibold ${getModuleStyles(activeProfileTab).accent} border-b-2 pb-2 mb-6 ${getModuleStyles(activeProfileTab).border}`}>
                         {category}
                     </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -325,7 +378,17 @@ export default function TextValidatorAIPage() {
                 ))}
             </div>
         </section>
-
+        
+        {/* --- SEZIONE 8: CTA FINALE --- */}
+        <section className="py-24 text-center">
+            <h2 className="text-5xl font-extrabold text-white mb-6">Pronto a passare dal caos al controllo?</h2>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+                Smetti di perdere tempo e inizia a creare documenti più intelligenti, sicuri ed efficaci. La tua intelligenza documentale inizia qui.
+            </p>
+            <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full transition-all duration-300 shadow-lg text-xl">
+                Prova Text Validator AI Gratuitamente
+            </Link>
+        </section>
       </div>
     </main>
   );
